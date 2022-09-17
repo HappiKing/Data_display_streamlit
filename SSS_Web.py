@@ -4,7 +4,6 @@ from email.utils import collapse_rfc2231_value
 from logging import PlaceHolder
 from pkgutil import get_data
 from pydoc import visiblename
-
 from attr import define
 from matplotlib import scale
 from matplotlib.pyplot import grid
@@ -14,7 +13,6 @@ import streamlit as st
 import pandas as pd
 import matplotlib
 import plotly.express as px # interactive charts 
-import altair as alt
 import time
 import numpy as np
 from page2 import page_more_graph
