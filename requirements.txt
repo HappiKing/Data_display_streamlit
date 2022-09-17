@@ -1,4 +1,3 @@
-matplotlib
-sqlalchemy
-plotly
-tkinter
+matplotlib == 3.6.0
+sqlalchemy == 1.4.41
+plotly = 5.10.0
