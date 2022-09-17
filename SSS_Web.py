@@ -4,7 +4,6 @@ from email.utils import collapse_rfc2231_value
 from logging import PlaceHolder
 from pkgutil import get_data
 from pydoc import visiblename
-from tkinter import Grid
 from turtle import width
 from attr import define
 from matplotlib import scale
