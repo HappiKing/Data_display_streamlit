@@ -4,15 +4,18 @@ from email.utils import collapse_rfc2231_value
 from logging import PlaceHolder
 from pkgutil import get_data
 from pydoc import visiblename
+from tkinter import VERTICAL, Grid
+from turtle import width
 from attr import define
 from matplotlib import scale
 from matplotlib.pyplot import grid
-#from pyparsing import col
+from pyparsing import col
 from sqlalchemy import column, create_engine, true
 import streamlit as st
 import pandas as pd
 import matplotlib
 import plotly.express as px # interactive charts 
+import altair as alt
 import time
 import numpy as np
 from page2 import page_more_graph
@@ -31,6 +34,10 @@ st.set_page_config(
     layout="wide",
 )
 
+def init_connection():
+    return mysql.connector.connect(**st.secrets["mysql"])
+conn = init_connection()
+
 def main_page():
     st.markdown("# Smart Sensor System")
     st.markdown("### Total Chart")
@@ -42,23 +49,38 @@ def main_page():
     while True : 
         # set csv_file url
         dataDate = time.strftime("%Y-%m-%d")
-        dataset_url = ("/home/pi/Desktop/SSS_Web_App/Data_source/" + dataDate + ".csv")
-       
+        
+        #dataset_url = ("/Users/hb/Desktop/SSS_Web_App/Data_source/" + dataDate + ".csv")
+        
         with placeholder.container():
-    
-            csv_read = pd.read_csv(dataset_url)
-            df = pd.DataFrame(csv_read)
 
-            fig = px.line(df,x="time",
+            # .csv파일 사용할 때
+            # csv_read = pd.read_csv(dataset_url)
+            # df = pd.DataFrame(csv_read)
+
+            # DB 사용할 때
+            SQL_Query = pd.read_sql('SELECT time, temp, humi, gas1, gas2, gas3, gas4, gas5, gas6 FROM sensor_db.sensor_table', conn)
+
+
+            df = pd.DataFrame(SQL_Query, columns=['temp', 'humi', 'gas1', 'gas2', 'gas3', 'gas4', 'gas5', 'gas6'])
+            df['time'] = pd.DataFrame(SQL_Query, columns=['time'])
+            cnt = len(df)
+
+            fig = px.line(df,x=df["time"],
             y=["gas1","gas2","gas3","gas4","gas5","gas6"])
             #title='total graph')
 
             fig.update_traces(line=dict(width=2.5))
             fig.update_layout(plot_bgcolor="white", width=1200, height =500)
-            fig.update_xaxes(showline = True, linewidth = 2, linecolor = "black", gridcolor = "black")
+            fig.update_xaxes(showline = True, linewidth = 2, linecolor = "black", gridcolor = "black",
+            ticklabeloverflow="hide past domain")
             fig.update_yaxes(showline = True, linewidth = 2, linecolor = "black", gridcolor = "black")
+            if (cnt > 50):
+                fig.update_xaxes(range=(cnt-50,cnt))
             
 
+            
+            st.markdown(cnt)
             st.write(fig)
 
             col1, col2, col3 = st.columns(3)
@@ -84,52 +106,52 @@ def main_page():
 ##각 센서별 작동 여부 디스플레이
             col_sensor1, col_sensor2, col_sensor3, col_sensor4, col_sensor5= st.columns(5)
             with col_sensor1 :
-                if (df.iloc[-1,9] > 0) : 
+                if (df.iloc[-1,2] > 0) : 
                     st.text("Sensor1")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/On_source.png")
-                elif (df.iloc[-1,9] == 0) : 
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/On_source.png")
+                elif (df.iloc[-1,2] == 0) : 
                     st.text("Sensor1")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/Off_source.png")
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/Off_source.png")
                 else :
                     st.title("No working")
 
             with col_sensor2 :
-                if (df.iloc[-1,10] > 0) : 
+                if (df.iloc[-1,3] > 0) : 
                     st.text("Sensor2")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/On_source.png")
-                elif (df.iloc[-1,10] == 0) : 
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/On_source.png")
+                elif (df.iloc[-1,3] == 0) : 
                     st.text("Sensor2")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/Off_source.png")
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/Off_source.png")
                 else :
                     st.title("No working")
 
             with col_sensor3 :
-                if (df.iloc[-1,11] > 0) : 
+                if (df.iloc[-1,4] > 0) : 
                     st.text("Sensor3")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/On_source.png")
-                elif (df.iloc[-1,11] == 0) : 
-                    st.text("Sensor3")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/Off_source.png")
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/On_source.png")
+                elif (df.iloc[-1,4] == 0) : 
+                    st.text("Sens4or3")
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/Off_source.png")
                 else :
                     st.title("No working")    
 
             with col_sensor4 :
-                if (df.iloc[-1,12] > 0) : 
+                if (df.iloc[-1,5] > 0) : 
                     st.text("Sensor4")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/On_source.png")
-                elif (df.iloc[-1,12] == 0) : 
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/On_source.png")
+                elif (df.iloc[-1,5] == 0) : 
                     st.text("Sensor4")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/Off_source.png")
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/Off_source.png")
                 else :
                     st.title("No working")
 
             with col_sensor5 :
-                if (df.iloc[-1,13] > 0) : 
+                if (df.iloc[-1,6] > 0) : 
                     st.text("Sensor5")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/On_source.png")
-                elif (df.iloc[-1,13] == 0) : 
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/On_source.png")
+                elif (df.iloc[-1,6] == 0) : 
                     st.text("Sensor5")
-                    st.image("/home/pi/Desktop/SSS_Web_App/Img_source/Off_source.png")
+                    st.image("/Users/hb/Desktop/SSS_Web_App/Img_source/Off_source.png")
                 else :
                     st.title("No working")
 
@@ -141,7 +163,7 @@ def main_page():
     
 
             #온습도 값 직접 받아서 연결
-
+            
             time.sleep(1)
 
         
