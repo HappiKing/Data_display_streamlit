@@ -32,9 +32,7 @@ st.set_page_config(
     layout="wide",
 )
 
-def init_connection():
-    return mysql.connector.connect(**st.secrets["mysql"])
-conn = init_connection()
+
 
 
 def main_page():
@@ -44,6 +42,9 @@ def main_page():
 
     placeholder = st.empty()
     
+    def init_connection():
+        return mysql.connector.connect(**st.secrets["mysql"])
+    conn = init_connection()
     
     while True : 
         # set csv_file url
