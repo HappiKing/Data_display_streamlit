@@ -16,7 +16,6 @@ import plotly.express as px # interactive charts
 import altair as alt
 import time
 import numpy as np
-import mysql-connector-python
 from page2 import page_more_graph
 from page3 import page_reload_data
 matplotlib.use('agg')
